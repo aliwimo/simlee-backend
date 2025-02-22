@@ -16,5 +16,5 @@ class TeamRepository extends BaseRepository
     {
         return $this->query()->where('slug', $slug)->firstOrFail();
     }
-    
+
 }
