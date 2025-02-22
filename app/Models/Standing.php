@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -18,6 +19,9 @@ use Illuminate\Support\Carbon;
  * @property int $points
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
+ * @property League $league
+ * @property Team $team
  */
 class Standing extends Model
 {
@@ -44,4 +48,14 @@ class Standing extends Model
      * @var array
      */
     protected $casts = [];
+
+    public function league(): BelongsTo
+    {
+        return $this->belongsTo(related: League::class);
+    }
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(related: Team::class);
+    }
 }

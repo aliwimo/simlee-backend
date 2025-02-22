@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Enums\LeagueStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -14,6 +17,10 @@ use Illuminate\Support\Carbon;
  * @property LeagueStatus $status
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
+ * @property Collection<Standing> $standings
+ * @property Collection<Fixture> $fixtures
+ * @property Collection<Team> $teams
  */
 class League extends Model
 {
@@ -37,4 +44,24 @@ class League extends Model
     protected $casts = [
         'status' => LeagueStatus::class,
     ];
+
+    public function standings(): HasMany
+    {
+        return $this->hasMany(related: Standing::class);
+    }
+
+    public function fixtures(): HasMany
+    {
+        return $this->hasMany(related: Fixture::class);
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            related: Team::class,
+            table: 'standings'
+        )
+            ->withPivot(['played', 'win', 'draw', 'lose', 'goals_for', 'goals_against', 'points'])
+            ->withTimestamps();
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -16,6 +17,10 @@ use Illuminate\Support\Carbon;
  * @property boolean $played
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
+ * @property League $league
+ * @property Team $homeTeam
+ * @property Team $awayTeam
  */
 class Fixture extends Model
 {
@@ -40,4 +45,25 @@ class Fixture extends Model
      * @var array
      */
     protected $casts = [];
+
+    public function league(): BelongsTo
+    {
+        return $this->belongsTo(related: League::class);
+    }
+
+    public function homeTeam(): BelongsTo
+    {
+        return $this->belongsTo(
+            related: Team::class,
+            foreignKey: 'home_team_id'
+        );
+    }
+
+    public function awayTeam(): BelongsTo
+    {
+        return $this->belongsTo(
+            related: Team::class,
+            foreignKey: 'away_team_id'
+        );
+    }
 }
