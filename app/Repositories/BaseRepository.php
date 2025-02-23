@@ -42,7 +42,7 @@ abstract class BaseRepository
      */
     public function all(): Collection
     {
-        return $this->model->all();
+        return $this->query()->orderBy('id', 'desc')->get();
     }
 
     /**

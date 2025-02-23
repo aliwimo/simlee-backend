@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Team;
+use Illuminate\Database\Eloquent\Collection;
 
 class TeamRepository extends BaseRepository
 {
@@ -17,4 +18,8 @@ class TeamRepository extends BaseRepository
         return $this->query()->where('slug', $slug)->firstOrFail();
     }
 
+    public function getRandomTeams(int $count): Collection
+    {
+        return $this->query()->inRandomOrder()->limit($count)->get();
+    }
 }

@@ -21,4 +21,9 @@ class TeamService
     {
         return $this->teamRepository->getTeamBySlug(slug: $slug);
     }
+
+    public function getRandomTeams(int $count): Collection
+    {
+        return $this->teamRepository->getRandomTeams($count);
+    }
 }
