@@ -21,7 +21,7 @@ class TeamResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->whenNotNull($this->slug),
             'strength' => $this->whenNotNull($this->strength),
-            'logo' => $this->whenNotNull($this->logo),
+            'logo' => $this->logo ? asset($this->logo) : null,
             'stadium' => $this->whenNotNull($this->stadium),
         ];
     }
