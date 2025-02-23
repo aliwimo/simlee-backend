@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property int $season
  * @property int $teams_number
+ * @property int $current_week
  * @property LeagueStatus $status
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -33,6 +34,7 @@ class League extends Model
         'name',
         'season',
         'teams_number',
+        'current_week',
         'status',
     ];
 

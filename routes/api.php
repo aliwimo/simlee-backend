@@ -17,6 +17,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('/', [LeagueController::class, 'store']);
         Route::get('/{id}', [LeagueController::class, 'show']);
         Route::get('/{id}/standings', [LeagueController::class, 'standings']);
+        Route::get('/{id}/fixtures', [LeagueController::class, 'fixtures']);
     });
 
     /** teams routes */

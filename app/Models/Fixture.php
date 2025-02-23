@@ -44,7 +44,9 @@ class Fixture extends Model
      *
      * @var array
      */
-    protected $casts = [];
+    protected $casts = [
+        'played' => 'boolean',
+    ];
 
     public function league(): BelongsTo
     {

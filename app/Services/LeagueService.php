@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\WeekQuery;
 use App\Http\Requests\StoreLeagueRequest;
 use App\Models\League;
 use App\Repositories\LeagueRepository;
@@ -43,10 +44,23 @@ class LeagueService
         return $league->standings()->with('team')->get();
     }
 
-    /**
-     * @return League
-     */
-    private function createLeague(StoreLeagueRequest $request): Model
+    public function getLeagueFixtures(int $leagueId, WeekQuery $week): Collection
+    {
+        /** @var League $league */
+        $league = $this->leagueRepository->findOrFail($leagueId);
+        $fixtures = $league->fixtures()->with('homeTeam', 'awayTeam');
+
+        match ($week) {
+            WeekQuery::CURRENT => $fixtures->where('week', $league->current_week),
+            WeekQuery::NEXT => $fixtures->where('week', ($league->current_week + 1)),
+            WeekQuery::UPCOMING => $fixtures->where('week', '>=', $league->current_week),
+            WeekQuery::PREVIOUS => $fixtures->where('week', '<', $league->current_week),
+            default => $fixtures,
+        };
+        return $fixtures->get();
+    }
+
+    private function createLeague(StoreLeagueRequest $request): League|Model
     {
         return $this->leagueRepository->create([
             'name' => $request->name,
