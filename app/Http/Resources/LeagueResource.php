@@ -21,6 +21,7 @@ class LeagueResource extends JsonResource
             'name' => $this->name,
             'season' => $this->whenNotNull($this->season),
             'teams_number' => $this->whenNotNull($this->teams_number),
+            'current_week' => $this->whenNotNull($this->current_week),
             'status' => $this->whenNotNull($this->status->value),
         ];
     }

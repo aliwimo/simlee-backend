@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('season');
             $table->integer('teams_number');
+            $table->integer('current_week')->default(1);
             $table->string('status')->default(LeagueStatus::ACTIVE->value);
             $table->timestamps();
 
