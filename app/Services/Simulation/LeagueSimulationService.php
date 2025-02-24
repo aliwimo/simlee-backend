@@ -2,17 +2,25 @@
 
 namespace App\Services\Simulation;
 
+use App\Contracts\Services\Simulation\LeagueSimulationServiceContract;
+use App\Contracts\Services\Simulation\MatchSimulationServiceContract;
+use App\Contracts\Services\StandingServiceContract;
 use App\Models\League;
 use App\Models\Fixture;
-use App\Services\StandingService;
 
-class LeagueSimulationService
+class LeagueSimulationService implements LeagueSimulationServiceContract
 {
     public function __construct(
-        protected MatchSimulationService $matchSimulationService,
-        protected StandingService $standingService,
+        protected MatchSimulationServiceContract $matchSimulationService,
+        protected StandingServiceContract $standingService,
     ) {}
 
+    /**
+     * Simulates a single fixture.
+     *
+     * @param Fixture $fixture
+     * @return Fixture
+     */
     public function simulateFixture(Fixture $fixture): Fixture
     {
         $result = $this->matchSimulationService->simulate($fixture);
@@ -28,7 +36,13 @@ class LeagueSimulationService
         return $fixture;
     }
 
-
+    /**
+     * Simulates all fixtures for a given week.
+     *
+     * @param League $league
+     * @param int $week
+     * @return League
+     */
     public function simulateWeek(League $league, int $week): League
     {
         $fixtures = $league->fixtures()
@@ -43,7 +57,12 @@ class LeagueSimulationService
         return $league;
     }
 
-
+    /**
+     * Simulates all remaining fixtures for a league.
+     *
+     * @param League $league
+     * @return League
+     */
     public function simulateAllWeeks(League $league): League
     {
         $remainingWeeks = Fixture::where('league_id', $league->id)

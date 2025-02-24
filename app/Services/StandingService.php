@@ -2,26 +2,28 @@
 
 namespace App\Services;
 
+use App\Contracts\Repositories\FixtureRepositoryContract;
+use App\Contracts\Repositories\StandingRepositoryContract;
+use App\Contracts\Services\StandingServiceContract;
 use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Standing;
 use App\Models\Team;
-use App\Repositories\FixtureRepository;
-use App\Repositories\StandingRepository;
 use Illuminate\Database\Eloquent\Collection;
 
-class StandingService
+class StandingService implements StandingServiceContract
 {
     public function __construct(
-        protected StandingRepository $standingRepository,
-        protected FixtureRepository $fixtureRepository,
+        protected StandingRepositoryContract $standingRepository,
+        protected FixtureRepositoryContract $fixtureRepository,
     ) {}
 
     /**
-     * Generates standings for a league
+     * Generates initial standings for a league.
      *
      * @param League $league
      * @param Collection $teams
+     * @return void
      */
     public function generateStandings(League $league, Collection $teams): void
     {
@@ -35,10 +37,11 @@ class StandingService
     }
 
     /**
-     * Recalculate standings for specific teams in a league
+     * Recalculates standings for specific teams.
      *
      * @param League $league
      * @param array $teamIds
+     * @return void
      */
     public function recalculateTeamStandings(League $league, array $teamIds): void
     {
@@ -63,9 +66,10 @@ class StandingService
     }
 
     /**
-     * Update standings after a fixture
+     * Updates standings after a fixture.
      *
      * @param Fixture $fixture
+     * @return void
      */
     public function updateStandingsAfterFixture(Fixture $fixture): void
     {
@@ -77,9 +81,10 @@ class StandingService
     }
 
     /**
-     * Recalculate standings for all teams in the league
+     * Refreshes standings for all teams in a league.
      *
      * @param League $league
+     * @return void
      */
     public function refreshLeagueStanding(League $league): void
     {
@@ -91,10 +96,10 @@ class StandingService
     }
 
     /**
-     * Get league standings
+     * Gets league standings.
      *
      * @param League $league
-     * @return Collection
+     * @return Collection<Standing>
      */
     public function getLeagueStandings(League $league): Collection
     {
@@ -104,7 +109,7 @@ class StandingService
     }
 
     /**
-     * Get a team's standing
+     * Gets a team's standing.
      *
      * @param League $league
      * @param Team $team
@@ -119,7 +124,7 @@ class StandingService
     }
 
     /**
-     * Prepare statistics for a team
+     * Prepares statistics for a team.
      *
      * @param int $teamId
      * @param Collection<Fixture> $fixtures

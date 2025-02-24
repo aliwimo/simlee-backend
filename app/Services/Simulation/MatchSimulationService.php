@@ -2,10 +2,17 @@
 
 namespace App\Services\Simulation;
 
+use App\Contracts\Services\Simulation\MatchSimulationServiceContract;
 use App\Models\Fixture;
 
-class MatchSimulationService
+class MatchSimulationService implements MatchSimulationServiceContract
 {
+    /**
+     * Simulates a match between two teams.
+     *
+     * @param Fixture $fixture
+     * @return array
+     */
     public function simulate(Fixture $fixture): array
     {
         $fixture->loadMissing('homeTeam', 'awayTeam');
@@ -22,6 +29,12 @@ class MatchSimulationService
         ];
     }
 
+    /**
+     * Calculates the number of goals scored by a team.
+     *
+     * @param float $strength
+     * @return int
+     */
     private function calculateGoals(float $strength): int
     {
         return max(0, (int) round($strength * mt_rand(0, 5)));

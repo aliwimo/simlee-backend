@@ -2,15 +2,15 @@
 
 namespace App\Observers;
 
+use App\Contracts\Repositories\FixtureRepositoryContract;
 use App\Enums\LeagueStatus;
 use App\Models\Fixture;
-use App\Repositories\FixtureRepository;
 
 class FixtureObserver
 {
 
     public function __construct(
-        protected FixtureRepository $fixtureRepository
+        protected FixtureRepositoryContract $fixtureRepository
     ) {}
 
     /**

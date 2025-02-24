@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\API\V1\League;
 
+use App\Contracts\Services\LeagueServiceContract;
+use App\Contracts\Services\Simulation\LeagueSimulationServiceContract;
 use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeagueRequest;
 use App\Http\Resources\FixtureResource;
 use App\Http\Resources\LeagueResource;
 use App\Http\Resources\StandingResource;
-use App\Services\LeagueService;
-use App\Services\Simulation\LeagueSimulationService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseStatus;
 use Throwable;
@@ -18,8 +18,8 @@ class LeagueController extends Controller
 {
 
     public function __construct(
-        protected LeagueService $leagueService,
-        protected LeagueSimulationService $leagueSimulationService,
+        protected LeagueServiceContract $leagueService,
+        protected LeagueSimulationServiceContract $leagueSimulationService,
     ) {}
 
     public function index(): JsonResponse
