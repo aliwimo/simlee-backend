@@ -12,4 +12,11 @@ class LeagueRepository extends BaseRepository
         parent::__construct($model);
     }
 
+    public function getLeagueWithFixtures(int $leagueId): League
+    {
+        return $this->query()
+            ->with('fixtures')
+            ->findOrFail($leagueId);
+    }
+
 }

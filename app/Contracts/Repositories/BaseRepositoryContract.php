@@ -1,50 +1,28 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Contracts\Repositories;
 
-use App\Contracts\Repositories\BaseRepositoryContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-abstract class BaseRepository implements BaseRepositoryContract
+interface BaseRepositoryContract
 {
-    /**
-     * @var Model The model instance
-     */
-    protected Model $model;
-
-    /**
-     * BaseRepository constructor.
-     *
-     * @param Model $model The model instance
-     */
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
-    }
-
     /**
      * Get a new query builder instance for the model.
      *
      * @return Builder
      */
-    public function query(): Builder
-    {
-        return $this->model::query();
-    }
+    public function query(): Builder;
 
     /**
      * Retrieve all records of the model.
      *
      * @return Collection
      */
-    public function all(): Collection
-    {
-        return $this->query()->orderBy('id', 'desc')->get();
-    }
+    public function all(): Collection;
 
     /**
      * Find a model by its primary key.
@@ -52,10 +30,7 @@ abstract class BaseRepository implements BaseRepositoryContract
      * @param int $id The ID of the model
      * @return Model|null
      */
-    public function find(int $id): ?Model
-    {
-        return $this->query()->find($id);
-    }
+    public function find(int $id): ?Model;
 
     /**
      * Find a model by its primary key or throw an exception.
@@ -64,10 +39,7 @@ abstract class BaseRepository implements BaseRepositoryContract
      * @return Model|null
      * @throws ModelNotFoundException
      */
-    public function findOrFail(int $id): ?Model
-    {
-        return $this->query()->findOrFail($id);
-    }
+    public function findOrFail(int $id): ?Model;
 
     /**
      * Create a new model instance with the given attributes.
@@ -75,10 +47,7 @@ abstract class BaseRepository implements BaseRepositoryContract
      * @param array $attributes The attributes to set on the model
      * @return Model
      */
-    public function create(array $attributes): Model
-    {
-        return $this->query()->create($attributes);
-    }
+    public function create(array $attributes): Model;
 
     /**
      * Update an existing model by its ID with given attributes.
@@ -87,10 +56,7 @@ abstract class BaseRepository implements BaseRepositoryContract
      * @param array $attributes The attributes to update
      * @return bool True if update was successful, false otherwise
      */
-    public function update(int $id, array $attributes): bool
-    {
-        return (bool) $this->query()->where('id', $id)->update($attributes);
-    }
+    public function update(int $id, array $attributes): bool;
 
     /**
      * Delete a model by its ID.
@@ -98,10 +64,7 @@ abstract class BaseRepository implements BaseRepositoryContract
      * @param int $id The ID of the model to delete
      * @return void
      */
-    public function delete(int $id): void
-    {
-        $this->model->destroy($id);
-    }
+    public function delete(int $id): void;
 
     /**
      * Paginate the model records.
@@ -109,8 +72,5 @@ abstract class BaseRepository implements BaseRepositoryContract
      * @param int $perPage Number of records per page
      * @return LengthAwarePaginator
      */
-    public function paginate(int $perPage = 10): LengthAwarePaginator
-    {
-        return $this->query()->paginate($perPage);
-    }
+    public function paginate(int $perPage = 10): LengthAwarePaginator;
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Observers\FixtureObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -22,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Team $homeTeam
  * @property Team $awayTeam
  */
+#[ObservedBy([FixtureObserver::class])]
 class Fixture extends Model
 {
     /**

@@ -2,15 +2,22 @@
 
 namespace App\Services;
 
+use App\Models\Fixture;
 use App\Models\League;
 use App\Repositories\FixtureRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class FixtureService
 {
     public function __construct(
         protected FixtureRepository $fixtureRepository,
     ) {}
+
+    public function getFixture(int $fixtureId): Fixture|Model
+    {
+        return $this->fixtureRepository->findOrFail($fixtureId);
+    }
 
     public function generateFixtures(League $league, Collection $teams): void
     {
@@ -76,7 +83,7 @@ class FixtureService
                 $home = ($round + $match) % ($teamCount - 1);
                 $away = ($teamCount - 1 - $match + $round) % ($teamCount - 1);
 
-                // Last team stays in the last position while others rotate
+                // The Last team stays in the last position while others rotate
                 if ($match == 0) {
                     $away = $teamCount - 1;
                 }

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\WeekQuery;
 use App\Http\Requests\StoreLeagueRequest;
 use App\Models\League;
 use App\Repositories\LeagueRepository;
@@ -23,6 +22,10 @@ class LeagueService
         return $this->leagueRepository->all();
     }
 
+    /**
+     * @param int $leagueId
+     * @return League
+     */
     public function getLeague(int $leagueId): League|Model
     {
         return $this->leagueRepository->findOrFail($leagueId);
@@ -41,25 +44,29 @@ class LeagueService
     {
         /** @var League $league */
         $league = $this->leagueRepository->findOrFail($leagueId);
-        return $league->standings()->with('team')->get();
+        return $league->standings()
+            ->with('team')
+            ->get();
     }
 
-    public function getLeagueFixtures(int $leagueId, WeekQuery $week): Collection
+    public function getLeagueFixtures(int $leagueId, int $week): Collection
     {
         /** @var League $league */
         $league = $this->leagueRepository->findOrFail($leagueId);
-        $fixtures = $league->fixtures()->with('homeTeam', 'awayTeam');
-
-        match ($week) {
-            WeekQuery::CURRENT => $fixtures->where('week', $league->current_week),
-            WeekQuery::NEXT => $fixtures->where('week', ($league->current_week + 1)),
-            WeekQuery::UPCOMING => $fixtures->where('week', '>=', $league->current_week),
-            WeekQuery::PREVIOUS => $fixtures->where('week', '<', $league->current_week),
-            default => $fixtures,
-        };
-        return $fixtures->get();
+        return $league->fixtures()
+            ->with('homeTeam', 'awayTeam')
+            ->where('week', $week)
+            ->get();
     }
 
+    public function simulate(int $leagueId): league
+    {
+        /** @var League $league */
+        $league = $this->leagueRepository->findOrFail($leagueId);
+
+        $this->fixtureService->simulateFixtures(league: $league);
+        return $league;
+    }
     private function createLeague(StoreLeagueRequest $request): League|Model
     {
         return $this->leagueRepository->create([
