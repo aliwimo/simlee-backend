@@ -2,32 +2,52 @@
 
 namespace App\Services;
 
-use App\Enums\WeekQuery;
+use App\Contracts\Repositories\LeagueRepositoryContract;
+use App\Contracts\Services\FixtureServiceContract;
+use App\Contracts\Services\LeagueServiceContract;
+use App\Contracts\Services\StandingServiceContract;
+use App\Contracts\Services\TeamServiceContract;
 use App\Http\Requests\StoreLeagueRequest;
 use App\Models\League;
-use App\Repositories\LeagueRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class LeagueService
+class LeagueService implements LeagueServiceContract
 {
     public function __construct(
-        protected LeagueRepository $leagueRepository,
-        protected TeamService $teamService,
-        protected StandingService $standingService,
-        protected FixtureService $fixtureService,
+        protected LeagueRepositoryContract $leagueRepository,
+        protected TeamServiceContract $teamService,
+        protected StandingServiceContract $standingService,
+        protected FixtureServiceContract $fixtureService,
     ) {}
 
+    /**
+     * Retrieves all leagues.
+     *
+     * @return Collection<League>
+     */
     public function getAllLeagues(): Collection
     {
         return $this->leagueRepository->all();
     }
 
+    /**
+     * Retrieves a league by ID.
+     *
+     * @param int $leagueId
+     * @return League|Model
+     */
     public function getLeague(int $leagueId): League|Model
     {
         return $this->leagueRepository->findOrFail($leagueId);
     }
 
+    /**
+     * Initializes a new league.
+     *
+     * @param StoreLeagueRequest $request
+     * @return League
+     */
     public function initializeLeague(StoreLeagueRequest $request): League
     {
         $league = $this->createLeague(request: $request);
@@ -37,29 +57,44 @@ class LeagueService
         return $league;
     }
 
+    /**
+     * Retrieves league standings.
+     *
+     * @param int $leagueId
+     * @return Collection
+     */
     public function getLeagueStandings(int $leagueId): Collection
     {
         /** @var League $league */
         $league = $this->leagueRepository->findOrFail($leagueId);
-        return $league->standings()->with('team')->get();
+        return $league->standings()
+            ->with('team')
+            ->get();
     }
 
-    public function getLeagueFixtures(int $leagueId, WeekQuery $week): Collection
+    /**
+     * Retrieves league fixtures for a specific week.
+     *
+     * @param int $leagueId
+     * @param int $week
+     * @return Collection
+     */
+    public function getLeagueFixtures(int $leagueId, int $week): Collection
     {
         /** @var League $league */
         $league = $this->leagueRepository->findOrFail($leagueId);
-        $fixtures = $league->fixtures()->with('homeTeam', 'awayTeam');
-
-        match ($week) {
-            WeekQuery::CURRENT => $fixtures->where('week', $league->current_week),
-            WeekQuery::NEXT => $fixtures->where('week', ($league->current_week + 1)),
-            WeekQuery::UPCOMING => $fixtures->where('week', '>=', $league->current_week),
-            WeekQuery::PREVIOUS => $fixtures->where('week', '<', $league->current_week),
-            default => $fixtures,
-        };
-        return $fixtures->get();
+        return $league->fixtures()
+            ->with('homeTeam', 'awayTeam')
+            ->where('week', $week)
+            ->get();
     }
 
+    /**
+     * Creates a new league.
+     *
+     * @param StoreLeagueRequest $request
+     * @return League|Model
+     */
     private function createLeague(StoreLeagueRequest $request): League|Model
     {
         return $this->leagueRepository->create([
@@ -68,8 +103,4 @@ class LeagueService
             'season' => $request->season
         ]);
     }
-
-
-
-
 }

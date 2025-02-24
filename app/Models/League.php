@@ -49,7 +49,11 @@ class League extends Model
 
     public function standings(): HasMany
     {
-        return $this->hasMany(related: Standing::class);
+        return $this->hasMany(related: Standing::class)
+            ->orderBy('points', 'desc')
+            ->orderByRaw('(goals_for - goals_against) DESC')
+            ->orderBy('played');
+
     }
 
     public function fixtures(): HasMany

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API\V1\Team;
 
+use App\Contracts\Services\TeamServiceContract;
 use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TeamResource;
-use App\Services\TeamService;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 use Symfony\Component\HttpFoundation\Response as ResponseStatus;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response as ResponseStatus;
 class TeamController extends Controller
 {
     public function __construct(
-        protected TeamService $teamService,
+        protected TeamServiceContract $teamService,
     ) {}
 
     public function index(): JsonResponse

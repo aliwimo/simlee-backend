@@ -2,21 +2,41 @@
 
 namespace App\Services;
 
+use App\Contracts\Repositories\FixtureRepositoryContract;
+use App\Contracts\Services\FixtureServiceContract;
+use App\Models\Fixture;
 use App\Models\League;
-use App\Repositories\FixtureRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
-class FixtureService
+class FixtureService implements FixtureServiceContract
 {
     public function __construct(
-        protected FixtureRepository $fixtureRepository,
+        protected FixtureRepositoryContract $fixtureRepository,
     ) {}
 
+    /**
+     * Retrieves a fixture by ID.
+     *
+     * @param int $fixtureId
+     * @return Fixture|Model
+     */
+    public function getFixture(int $fixtureId): Fixture|Model
+    {
+        return $this->fixtureRepository->findOrFail($fixtureId);
+    }
+
+    /**
+     * Generates fixtures for a league.
+     *
+     * @param League $league
+     * @param Collection $teams
+     * @return void
+     */
     public function generateFixtures(League $league, Collection $teams): void
     {
         $fixtures = $this->generateFixturesList($teams);
 
-        // Each team plays home and away
         $weekFixtures = [];
         $currentWeek = 1;
 
@@ -39,7 +59,7 @@ class FixtureService
             foreach ($matches as $match) {
                 $weekFixtures[] = [
                     'league_id' => $league->id,
-                    'home_team_id' => $match[1], // Swap home and away
+                    'home_team_id' => $match[1],
                     'away_team_id' => $match[0],
                     'week' => $currentWeek,
                     'played' => false,
@@ -51,16 +71,20 @@ class FixtureService
         $league->fixtures()->createMany($weekFixtures);
     }
 
-    protected function generateFixturesList(Collection $teams): array
+    /**
+     * Generates a list of fixtures.
+     *
+     * @param Collection $teams
+     * @return array
+     */
+    private function generateFixturesList(Collection $teams): array
     {
         $teamCount = $teams->count();
         $rounds = $teamCount - 1;
         $matchesPerRound = $teamCount / 2;
 
-        // Convert teams collection to array of IDs
         $teamIds = $teams->pluck('id')->toArray();
 
-        // If odd number of teams, add a "bye" team
         if ($teamCount % 2 !== 0) {
             $teamIds[] = null;
             $rounds += 1;
@@ -76,12 +100,10 @@ class FixtureService
                 $home = ($round + $match) % ($teamCount - 1);
                 $away = ($teamCount - 1 - $match + $round) % ($teamCount - 1);
 
-                // Last team stays in the last position while others rotate
                 if ($match == 0) {
                     $away = $teamCount - 1;
                 }
 
-                // Skip matches with "bye" team
                 if ($teamIds[$home] !== null && $teamIds[$away] !== null) {
                     $roundFixtures[] = [$teamIds[$home], $teamIds[$away]];
                 }
@@ -92,5 +114,4 @@ class FixtureService
 
         return $fixtures;
     }
-
 }
