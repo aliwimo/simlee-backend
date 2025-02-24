@@ -1,6 +1,6 @@
-# WoClass README
+# Simlee
 
-This is a Laravel app for scheduling classes and events.
+This is a Laravel app for simulating football leagues
 
 
 ## Requirements
