@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\League;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -32,5 +33,19 @@ class StoreLeagueRequest extends FormRequest
             'teams_number' => ['required', 'integer', 'min:4', 'max:20'],
             'season' => ['required', 'integer', 'min:2000', 'max:2100'],
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $exists = League::query()
+                ->where('name', $this->name)
+                ->where('season', $this->season)
+                ->exists();
+
+            if ($exists) {
+                $validator->errors()->add('name', 'A league with this name already exists for the selected season.');
+            }
+        });
     }
 }
